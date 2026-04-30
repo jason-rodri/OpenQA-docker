@@ -1,0 +1,84 @@
+name: openqa-rocky
+
+services:
+
+  openqa:
+    build:
+      context: .
+      dockerfile: Dockerfile
+      args:
+        # Override to test a specific PR branch:
+        #   DISTRI_BRANCH: fix-my-feature
+        #   DISTRI_REPO: https://github.com/your-fork/os-autoinst-distri-rocky.git
+        DISTRI_BRANCH: main
+        DISTRI_REPO: https://github.com/rocky-linux/os-autoinst-distri-rocky.git
+    image: openqa-rocky:latest
+    container_name: openqa
+    hostname: openqa
+
+    # KVM access for QEMU backend
+    devices:
+      - /dev/kvm:/dev/kvm
+      - /dev/net/tun:/dev/net/tun
+
+    # Required for TAP device and bridge management
+    cap_add:
+      - NET_ADMIN
+      - NET_RAW
+
+    ports:
+      - "80:80"
+      - "443:443"
+
+    networks:
+      - openqa-tap
+
+    volumes:
+      # Drop Rocky ISOs here before submitting a job:
+      #   docker cp Rocky-10.x-x86_64-dvd.iso openqa:/var/lib/openqa/factory/iso/
+      - iso-store:/var/lib/openqa/factory/iso
+
+      # Test results and screenshots persist across restarts
+      - test-results:/var/lib/openqa/testresults
+
+      # Database persists across restarts
+      - pgdata:/var/lib/pgsql/data
+
+    environment:
+      QEMURAM: "4096"
+      QEMUCPUS: "4"
+
+    sysctls:
+      - net.ipv4.ip_forward=1
+      - net.ipv6.conf.all.disable_ipv6=0
+      - net.bridge.bridge-nf-call-iptables=0
+
+    shm_size: 256m
+
+    restart: unless-stopped
+
+    healthcheck:
+      test: ["CMD", "curl", "-sf", "http://localhost/api/v1/jobs?limit=1"]
+      interval: 30s
+      timeout: 10s
+      retries: 5
+      start_period: 60s
+
+# Bridge network required for TAP multi-machine tests
+networks:
+  openqa-tap:
+    driver: bridge
+    driver_opts:
+      com.docker.network.bridge.name: br-openqa
+    ipam:
+      driver: default
+      config:
+        - subnet: 172.16.2.0/24
+          gateway: 172.16.2.1
+          ip_range: 172.16.2.128/25
+    internal: false
+
+volumes:
+  iso-store:
+  test-results:
+  pgdata:
