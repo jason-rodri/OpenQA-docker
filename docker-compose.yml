@@ -34,9 +34,8 @@ services:
       - openqa-tap
 
     volumes:
-      # Drop Rocky ISOs here before submitting a job:
-      #   docker cp Rocky-10.x-x86_64-dvd.iso openqa:/var/lib/openqa/factory/iso/
-      - iso-store:/var/lib/openqa/factory/iso
+      # Drop Rocky ISOs into ./isos/ on the host — no docker cp needed
+      - ./isos:/var/lib/openqa/factory/iso
 
       # Test results and screenshots persist across restarts
       - test-results:/var/lib/openqa/testresults
@@ -78,6 +77,5 @@ networks:
     internal: false
 
 volumes:
-  iso-store:
   test-results:
   pgdata:

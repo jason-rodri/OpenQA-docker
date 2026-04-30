@@ -20,8 +20,9 @@ docker compose up -d --build
 # 2. Wait for the container to be healthy (~60s)
 docker compose ps
 
-# 3. Copy your Rocky ISO into the container
-docker cp Rocky-10.x-x86_64-dvd.iso openqa:/var/lib/openqa/factory/iso/
+# 3. Copy or download your Rocky ISO into the isos/ directory
+mkdir -p isos
+cp /path/to/Rocky-10.x-x86_64-dvd.iso isos/
 
 # 4. Get the generated API key
 docker exec openqa cat /etc/openqa/client.conf
@@ -35,6 +36,10 @@ open http://localhost
 ```bash
 # Install openqa-cli (Fedora/Rocky: dnf install openqa-cli)
 # Or use the container itself:
+#
+# First place your ISO in the isos/ directory next to docker-compose.yml:
+#   cp Rocky-10.x-x86_64-dvd.iso isos/
+#
 docker exec openqa openqa-cli --host http://localhost \
     --apikey  <KEY> \
     --apisecret <SECRET> \
@@ -132,7 +137,7 @@ docker exec openqa tail -f /var/log/openqa/tap-setup.log
 
 | Volume | Contents |
 |---|---|
-| `iso-store` | Rocky Linux ISO files |
+| `./isos/` | Rocky Linux ISO files (host directory, bind-mounted) |
 | `test-results` | Job screenshots and results |
 | `pgdata` | PostgreSQL database |
 
