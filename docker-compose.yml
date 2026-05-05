@@ -44,6 +44,7 @@ services:
       - pgdata:/var/lib/pgsql/data
 
     environment:
+      QEMUCPU: "host"
       QEMURAM: "4096"
       QEMUCPUS: "4"
 

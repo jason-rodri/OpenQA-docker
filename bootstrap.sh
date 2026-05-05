@@ -28,7 +28,7 @@ for i in $(seq 1 60); do
 done
 
 # ── seed API key (idempotent) ─────────────────────────────────────────────────
-KEYFILE=/etc/openqa/client.conf
+KEYFILE=/etc/openqa/client.conf.d/localhost.conf
 if ! grep -q '^\[localhost\]' "$KEYFILE" 2>/dev/null; then
     echo "[bootstrap] generating API key..." | tee -a "$LOG"
 

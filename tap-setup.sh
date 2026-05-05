@@ -57,10 +57,9 @@ echo "Bridge configuration:"
 ip addr show "$BRIDGE_NAME"
 echo ""
 
-# Enable IP forwarding
+# Enable IP forwarding (set by docker-compose sysctl; best-effort write here)
 echo "Enabling IP forwarding..."
-echo 1 > /proc/sys/net/ipv4/ip_forward
-sysctl -w net.ipv4.ip_forward=1
+sysctl -w net.ipv4.ip_forward=1 2>/dev/null || true
 
 # Setup NAT for TAP bridge (allows VMs to reach external network)
 echo "Configuring NAT..."

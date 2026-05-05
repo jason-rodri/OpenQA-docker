@@ -28,5 +28,19 @@ if [ -f "${POOL_DIR}/.locked" ]; then
     rm -f "${POOL_DIR}/.locked"
 fi
 
+# Write QEMURAM / QEMUCPUS from env vars into a drop-in so docker-compose
+# environment overrides actually reach QEMU.
+DROPIN=/etc/openqa/workers.ini.d/20-docker-env.ini
+{
+    echo "[${INSTANCE}]"
+    for var in QEMURAM QEMUCPUS QEMUCPU; do
+        val="${!var:-}"
+        if [ -n "$val" ]; then
+            echo "${var} = ${val}"
+            echo "[worker-${INSTANCE}] set ${var}=${val} in workers drop-in" | tee -a "$LOG"
+        fi
+    done
+} > "$DROPIN"
+
 echo "[worker-${INSTANCE}] starting worker..." | tee -a "$LOG"
 exec /usr/share/openqa/script/worker --instance "$INSTANCE"
