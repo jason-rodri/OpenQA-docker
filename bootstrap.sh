@@ -6,6 +6,10 @@ set -euo pipefail
 LOG=/var/log/openqa/bootstrap.log
 mkdir -p /var/log/openqa
 
+# Ensure volume-mounted directories have correct ownership (uid may differ
+# between image rebuilds if the named volume was initialised by an older image)
+chown -R geekotest:geekotest /var/lib/openqa/testresults /var/lib/openqa/factory/iso 2>/dev/null || true
+
 echo "[bootstrap] waiting for postgresql..." | tee -a "$LOG"
 for i in $(seq 1 30); do
     pg_isready -q && break

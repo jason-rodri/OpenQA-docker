@@ -14,6 +14,9 @@ RUN dnf install -y \
       openqa-worker \
       os-autoinst-openvswitch \
       openvswitch \
+      qemu-kvm \
+      qemu-img \
+      ffmpeg-free \
       withlock \
       postgresql-server \
       perl-REST-Client \
