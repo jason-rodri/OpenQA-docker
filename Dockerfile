@@ -105,7 +105,9 @@ RUN chmod +x /usr/local/bin/bootstrap.sh \
 # ── supervisord config ────────────────────────────────────────────────────────
 COPY supervisord.conf /etc/supervisord.conf
 
-VOLUME ["/var/lib/openqa/factory/iso", \
+VOLUME ["/var/lib/openqa/share/factory/iso", \
+        "/var/lib/openqa/share/factory/hdd", \
+        "/var/lib/openqa/share/factory/other", \
         "/var/lib/openqa/testresults"]
 
 EXPOSE 80 443

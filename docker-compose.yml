@@ -35,7 +35,10 @@ services:
 
     volumes:
       # Drop Rocky ISOs into ./isos/ on the host — no docker cp needed
-      - ./isos:/var/lib/openqa/factory/iso
+      - ./isos:/var/lib/openqa/share/factory/iso
+
+      # Generated HDD/QCOW2 images from test runs persist across restarts
+      - hdd-images:/var/lib/openqa/share/factory/hdd
 
       # Test results and screenshots persist across restarts
       - test-results:/var/lib/openqa/testresults
@@ -78,5 +81,6 @@ networks:
     internal: false
 
 volumes:
+  hdd-images:
   test-results:
   pgdata:
